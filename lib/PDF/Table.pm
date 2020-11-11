@@ -11,7 +11,7 @@ use Carp;
 use List::Util qw[min max];  # core
 
 our $VERSION = '1.001'; # fixed, read by Makefile.PL
-my $LAST_UPDATE = '1.001'; # manually update whenever code is changed
+my $LAST_UPDATE = '1.002'; # manually update whenever code is changed
 
 my $compat_mode = 0; # 0 = new behaviors, 1 = compatible with old
 # NOTE that a number of t-tests will FAIL in mode 1 (compatible with old)
@@ -101,9 +101,11 @@ sub set_pdf {
 sub set_page {
     my ($self, $page) = @_;
     if ( defined($page) && ref($page) ne 'PDF::API2::Page'
+						&& ref($page) ne 'PDF::API3::Compat::API2::Page'
                         && ref($page) ne 'PDF::Builder::Page' ) {
 
         if (ref($self->{'pdf'}) eq 'PDF::API2' ||
+			ref($self->{'pdf'}) eq 'PDF::API3::Compat::API2' ||
             ref($self->{'pdf'}) eq 'PDF::Builder') {
             $self->{'page'} = $self->{'pdf'}->page();
         } else {
@@ -154,9 +156,11 @@ sub table {
     # Validate mandatory argument data type
     croak "Error: Invalid PDF object received."  
         unless (ref($pdf) eq 'PDF::API2' ||
+				ref($pdf) eq 'PDF::API3::Compat::API2' ||
                 ref($pdf) eq 'PDF::Builder');
     croak "Error: Invalid page object received." 
         unless (ref($page) eq 'PDF::API2::Page' || 
+				ref($page) eq 'PDF::API3::Compat::API2' ||
                 ref($page) eq 'PDF::Builder::Page');
     croak "Error: Invalid data received." 
         unless ((ref($data) eq 'ARRAY') && scalar(@$data));
